@@ -11,7 +11,7 @@
 	<OS>Windows</OS>
 	<Bits>64</Bits>
 	<NodesCollection class_id="1" tracking_level="0" version="1">
-		<NodesCount>6</NodesCount>
+		<NodesCount>7</NodesCount>
 		<item class_id="2" tracking_level="0" version="15">
 			<Plugin_label>Viewer1</Plugin_label>
 			<Plugin_script_name>Viewer1</Plugin_script_name>
@@ -886,7 +886,7 @@
 				</item>
 				<item>
 					<first>B</first>
-					<second>CheckerBoard1</second>
+					<second>Shuffle1</second>
 				</item>
 			</Inputs_map>
 			<KnobsAge>0</KnobsAge>
@@ -1208,7 +1208,7 @@
 				<count>0</count>
 				<item_version>0</item_version>
 			</Inputs_map>
-			<KnobsAge>94</KnobsAge>
+			<KnobsAge>106</KnobsAge>
 			<MasterNode></MasterNode>
 			<HasRotoContext>0</HasRotoContext>
 			<HasTrackerContext>0</HasTrackerContext>
@@ -1224,6 +1224,79 @@
 				<item_version>2</item_version>
 			</UserComponents>
 			<CacheID>Read1_3</CacheID>
+		</item>
+		<item>
+			<Plugin_label>Shuffle1</Plugin_label>
+			<Plugin_script_name>Shuffle1</Plugin_script_name>
+			<Plugin_id>net.sf.openfx.ShufflePlugin</Plugin_id>
+			<PythonModule></PythonModule>
+			<PythonModuleVersion>0</PythonModuleVersion>
+			<Plugin_major_version>3</Plugin_major_version>
+			<Plugin_minor_version>0</Plugin_minor_version>
+			<KnobsCount>2</KnobsCount>
+			<item>
+				<Name>outputA</Name>
+				<Type>Choice</Type>
+				<Dimension>1</Dimension>
+				<Secret>0</Secret>
+				<MasterIsAlias>0</MasterIsAlias>
+				<item>
+					<Enabled>1</Enabled>
+					<HasAnimation>0</HasAnimation>
+					<Value>4</Value>
+					<Default>9</Default>
+					<HasMaster>0</HasMaster>
+					<Expression></Expression>
+					<ExprHasRet>0</ExprHasRet>
+				</item>
+				<ChoiceLabel>0</ChoiceLabel>
+				<UserKnob>0</UserKnob>
+			</item>
+			<item>
+				<Name>userTextArea</Name>
+				<Type>String</Type>
+				<Dimension>1</Dimension>
+				<Secret>0</Secret>
+				<MasterIsAlias>0</MasterIsAlias>
+				<item>
+					<Enabled>1</Enabled>
+					<HasAnimation>0</HasAnimation>
+					<Value>&lt;font size=&quot;6&quot; color=&quot;#000000&quot; face=&quot;Droid Sans&quot;&gt;&lt;/font&gt;</Value>
+					<Default></Default>
+					<HasMaster>0</HasMaster>
+					<Expression></Expression>
+					<ExprHasRet>0</ExprHasRet>
+				</item>
+				<StringsAnimation>
+					<count>0</count>
+					<item_version>0</item_version>
+				</StringsAnimation>
+				<UserKnob>0</UserKnob>
+			</item>
+			<Inputs_map>
+				<count>1</count>
+				<item_version>0</item_version>
+				<item>
+					<first>B</first>
+					<second>CheckerBoard1</second>
+				</item>
+			</Inputs_map>
+			<KnobsAge>1</KnobsAge>
+			<MasterNode></MasterNode>
+			<HasRotoContext>0</HasRotoContext>
+			<HasTrackerContext>0</HasTrackerContext>
+			<MultiInstanceParent></MultiInstanceParent>
+			<UserPagesCount>0</UserPagesCount>
+			<PagesCount>3</PagesCount>
+			<name>Controls</name>
+			<name>Node</name>
+			<name>Info</name>
+			<Children>0</Children>
+			<UserComponents>
+				<count>0</count>
+				<item_version>2</item_version>
+			</UserComponents>
+			<CacheID>Shuffle1</CacheID>
 		</item>
 	</NodesCollection>
 	<ProjectKnobsCount>5</ProjectKnobsCount>
@@ -1315,7 +1388,7 @@
 		<item>
 			<Enabled>0</Enabled>
 			<HasAnimation>0</HasAnimation>
-			<Value>週一 二月 12 12:23:27 2024</Value>
+			<Value>週一 二月 12 14:33:02 2024</Value>
 			<Default></Default>
 			<HasMaster>0</HasMaster>
 			<Expression></Expression>
@@ -1346,7 +1419,7 @@
 </Project>
 <ProjectGui class_id="12" tracking_level="0" version="12">
 	<NodesGui class_id="13" tracking_level="0" version="0">
-		<count>6</count>
+		<count>7</count>
 		<item_version>6</item_version>
 		<item class_id="14" tracking_level="0" version="6">
 			<Name>Viewer1</Name>
@@ -1392,8 +1465,8 @@
 		</item>
 		<item>
 			<Name>CheckerBoard1</Name>
-			<X_position>2.26800000000000000e+03</X_position>
-			<Y_position>3.45250000000000000e+02</Y_position>
+			<X_position>2.36062823974081221e+03</X_position>
+			<Y_position>2.66151727861770837e+02</Y_position>
 			<Preview_enabled>0</Preview_enabled>
 			<r>3.000076413e-01</r>
 			<g>5.000076294e-01</g>
@@ -1429,6 +1502,20 @@
 			<Selected>0</Selected>
 			<Width>1.28000000000000000e+02</Width>
 			<Height>7.80000000000000000e+01</Height>
+			<HasOverlayColor>0</HasOverlayColor>
+			<Children>0</Children>
+		</item>
+		<item>
+			<Name>Shuffle1</Name>
+			<X_position>2.36062823974081221e+03</X_position>
+			<Y_position>3.28151727861770837e+02</Y_position>
+			<Preview_enabled>0</Preview_enabled>
+			<r>6.000000238e-01</r>
+			<g>2.399939001e-01</g>
+			<b>3.900053501e-01</b>
+			<Selected>0</Selected>
+			<Width>1.04000000000000000e+02</Width>
+			<Height>3.20000000000000000e+01</Height>
 			<HasOverlayColor>0</HasOverlayColor>
 			<Children>0</Children>
 		</item>
@@ -1542,7 +1629,7 @@
 	<OpenedPanels>
 		<count>2</count>
 		<item_version>0</item_version>
-		<item>Read1_3</item>
+		<item>Shuffle1</item>
 		<item>Natron_Project_Settings_Panel</item>
 	</OpenedPanels>
 	<ScriptEditorInput></ScriptEditorInput>
