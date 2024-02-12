@@ -16,12 +16,12 @@ def save_multi_layer_exr(output_path, images, layer_names):
     # Assume all images have the same resolution
     height, width, _ = images[0].shape
     header = OpenEXR.Header(width, height)
-    half_chan = Imath.Channel(Imath.PixelType(Imath.PixelType.HALF))
+    half_chan = Imath.Channel(Imath.PixelType(Imath.PixelType.FLOAT))
     header['channels'] = dict()
 
     for img, layer_name in zip(images, layer_names):
         # Convert image to half float
-        img_half = img.astype(np.float16)
+        img_float = img.astype(np.float32)
 
         # Prepare the channels for this layer
         for i, channel in enumerate("RGBA"):
@@ -33,9 +33,10 @@ def save_multi_layer_exr(output_path, images, layer_names):
     # Prepare pixel data
     pixel_data = dict()
     for img, layer_name in zip(images, layer_names):
-        img_half = img.astype(np.float16)
+        img_float = img.astype(np.float32)
         for i, channel in enumerate("RGBA"):
-            pixel_data[f"{layer_name}.{channel}"] = img_half[:, :, i].tobytes()
+            pixel_data[f"{layer_name}.{channel}"] = img_float[:, :,
+                                                              i].tobytes()
 
     # Write pixels
     exr_file.writePixels(pixel_data)
