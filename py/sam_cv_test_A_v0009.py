@@ -5,6 +5,7 @@ import numpy as np
 
 from mijo_fk_cv_np import *
 from mmh_test import string_to_cm_float
+from write_multi_RGBA_exr import *
 
 import os
 
@@ -36,6 +37,7 @@ all_mask_sum = merge_sum_images(images)
 
 img = all_mask_sum
 # print(all_mask_sum)
+# print(img)
 '''
 color_values = [0, 1, 2, 3, 4, 5]
 
@@ -59,3 +61,15 @@ for color_value in color_values:
     # Save the result
     save_as_exr(result, f'merged_image_{color_values_int}.exr')
 '''
+# 读取输入图像
+# image_paths = ['image1.png', 'image2.png', 'image3.png']  # 你的输入图像路径
+# images = [cv2.imread(image_path) for image_path in image_paths]
+
+iiii = [img, img]
+
+# print(iiii[0].shape)
+
+# 保存为多层EXR文件
+output_file = 'output.exr'
+layer_names = ['Layer1', 'Layer2']  # Unique layer names
+save_multi_layer_exr(output_file, iiii, layer_names)
