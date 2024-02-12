@@ -50,7 +50,7 @@ cm0 = np.zeros((height, width, 4), dtype=np.float32)
 cm0_r = np.zeros((height, width), dtype=np.float32)
 cm0_g = np.zeros((height, width), dtype=np.float32)
 
-bool_depth_1 = ((1 - np.abs(img_sum * 255)) < 0.1)
+bool_depth_1 = ((np.abs(1 - (img_sum * 255))) < 0.1)
 # bool_depth_1 = (img_sum == (1 / 255))
 # bool_depth_1 = (img_sum > 0.5)
 
@@ -60,6 +60,7 @@ manifest_data = {}
 
 for key, value in images.items():
     bool_png_Mask = (value > 0)
+    float_png_Mask = bool_png_Mask.astype(np.float32)
     intersection = np.logical_and(bool_png_Mask, bool_depth_1)
     # cm_value = string_to_cm_float(key)
     aaa = hash_object_name(key)
@@ -70,6 +71,7 @@ for key, value in images.items():
     indices = np.where(intersection)
     indices = indices[:2]  # Select only the first two arrays
     cm0_r[indices] = cm_value
+    cm0_g[indices] = 255
     # cm0[:, :, 0][indices] = value
     manifest_data.update(aaa['fk'])
 
@@ -78,6 +80,7 @@ for key, value in images.items():
 # cm0[:, :, 0] = np.squeeze(cm0_r)
 # print(cm0_r)
 cm0[:, :, 0] = cm0_r
+cm0[:, :, 1] = cm0_g
 # print(cm0[:, :, 0])
 # cm0[:, :, 1] = np.squeeze(cm0_g)
 

@@ -7,6 +7,7 @@ import sys
 np.set_printoptions(threshold=sys.maxsize)  # dont skip print
 
 import json
+from mmh_test import *
 
 
 def save_multi_layer_exr(output_path, images, layer_names, metadata,
@@ -28,11 +29,18 @@ def save_multi_layer_exr(output_path, images, layer_names, metadata,
     # header['fuck'] = {"fuck": "qwerty"}
     # header['channels'] = dict([(c, float_chan) for c in "RGBA"])
 
-    header['cryptomatte/3ae39a5/conversion'] = b"uint32_to_float32"
-    header['cryptomatte/3ae39a5/manifest'] = json.dumps(manifest_data).encode(
-        'utf-8')
-    header['cryptomatte/3ae39a5/name'] = b"ViewLayer.CryptoObject"
-    header['cryptomatte/3ae39a5/hash'] = b"Murmurhash3_32"
+    # layer_hash_str = layer_hash('ViewLayer.CryptoObject')
+    layer_hash_str = layer_hash('CryptoObject')
+
+    print(f"fuuuuuuuuk:{layer_hash_str}")
+
+    header['cryptomatte/' + layer_hash_str +
+           '/conversion'] = b"uint32_to_float32"
+    header['cryptomatte/' + layer_hash_str +
+           '/manifest'] = json.dumps(manifest_data).encode('utf-8')
+    header['cryptomatte/' + layer_hash_str +
+           '/name'] = b"ViewLayer.CryptoObject"
+    header['cryptomatte/' + layer_hash_str + '/hash'] = b"Murmurhash3_32"
 
     # header['metadata'] = metadata
 

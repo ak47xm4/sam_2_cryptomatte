@@ -1,3 +1,4 @@
+import binascii
 import mmh3
 import numpy as np
 import sys
@@ -40,26 +41,65 @@ def string_to_cm_float(name):
     return np.float32(mmh3.hash(name, 0) & 0xffffffff) / np.float32(2**32)
 
 
+'''
+def mm3hash_float(name):
+    hash_32 = mmh3.hash(name)
+    exp = hash_32 >> 23 & 255
+    if (exp == 0) or (exp == 255):
+        hash_32 ^= 1 << 23
+    packed = struct.pack('<L', hash_32 & 0xffffffff)
+    return struct.unpack('<f', packed)[0]
+'''
+
+
+def mm3hash_float(name):
+    hash_32 = mmh3.hash(name)
+    exp = hash_32 >> 23 & 255
+    if (exp == 0) or (exp == 255):
+        hash_32 ^= 1 << 23
+
+    packed = struct.pack('<L', hash_32 & 0xffffffff)
+    return struct.unpack('<f', packed)[0]
+
+
+def id_to_hex(id):
+    return "{0:08x}".format(struct.unpack('<I', struct.pack('<f', id))[0])
+
+
+def layer_hash(layer_name):
+    return id_to_hex(mm3hash_float(layer_name))[:-1]
+
+
 def hash_object_name(object_name):
     # 计算 MurmurHash3_32 位哈希
-    hash_value = mmh3.hash(object_name.encode(), seed=0)
+    hash_value = mmh3.hash(object_name.encode('utf-8'), seed=0)
 
     # 将 uint32 转换为 float32
-    float_value = struct.unpack('f', struct.pack('I',
-                                                 hash_value & 0xffffffff))[0]
+    # float_value = struct.unpack('f', struct.pack('I',
+    #  hash_value & 0xffffffff))[0]
+    float_value = mm3hash_float(object_name)
 
-    # 获取 float32 值的 7 位哈希值
-    seven_digit_hash = str(float_value)[:7]
+    # hash_hex = struct.unpack('=f', object_name.decode('hex'))[0]
+    # hash_hex = mm3_float_2_hex8(float_value)
+    hex_fk = id_to_hex(mm3hash_float(object_name))
+    # print(hex_fk)
+    # print(seven_digit_hash)
 
     return {
-        'hash_7': seven_digit_hash,
+        'hash_hex': hex_fk,
         'fff': float_value,
         'fk': {
-            object_name: seven_digit_hash
+            object_name: hex_fk
         }
     }
 
 
+# aaa = id_to_hex(mm3hash_float('Cube'))
+
+# print(aaa)
+
+# aaa = mm3_str_2_hex8('Cube')
+# print(aaa)
 # 测试
 # object_name = "your_object_name_here"
 # hashed_value = hash_object_name(object_name)
