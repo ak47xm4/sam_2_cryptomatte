@@ -28,6 +28,6 @@ string_vars = np.empty((height, width), dtype='object')
 random_integers = np.random.randint(0, 5, size=(height, width), dtype=np.uint8)
 
 # 你可以通过以下方式访问特定像素处的字符串变量：
-print(random_integers)
+# print(random_integers)
 
 # save_as_exr(merged_image, 'merged_image.exr')

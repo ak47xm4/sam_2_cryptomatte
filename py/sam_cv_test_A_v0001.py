@@ -6,6 +6,7 @@ import numpy as np
 image1 = cv2.imread('input.png')
 image2 = cv2.imread('input2.png')
 
+
 def red_channel_to_alpha(image):
     # 分割图像通道
     b, g, r = cv2.split(image)
@@ -19,13 +20,13 @@ def red_channel_to_alpha(image):
     # 合并Alpha通道到原始图像
     return cv2.merge([b, g, r, alpha])  # return the new image
 
+
 # update the original images with the returned images
 image1 = red_channel_to_alpha(image1)
 image2 = red_channel_to_alpha(image2)
 
-
-alpha_image1 = image1[:,:,3] / 255.0
-alpha_image2 = image2[:,:,3] / 255.0
+alpha_image1 = image1[:, :, 3] / 255.0
+alpha_image2 = image2[:, :, 3] / 255.0
 
 # set adjusted colors
 for color in range(0, 3):
@@ -33,7 +34,7 @@ for color in range(0, 3):
         alpha_image1 * image1[:,:,color] * (1 - alpha_image2)
 
 # set adjusted alpha and denormalize back to 0-255
-image1[:,:,3] = (1 - (1 - alpha_image2) * (1 - alpha_image1)) * 255
+image1[:, :, 3] = (1 - (1 - alpha_image2) * (1 - alpha_image1)) * 255
 
 # 保存合并后的图像
 cv2.imwrite('merged_image.png', image1)

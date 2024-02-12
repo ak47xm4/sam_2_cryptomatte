@@ -15,6 +15,4 @@ image2 = red_channel_to_alpha(image2)
 # merged_image = merge_over_images(image1, image2)
 merged_image = merge_add_images(image1, image2)
 
-
-
 save_as_exr(merged_image, 'merged_image.exr')
