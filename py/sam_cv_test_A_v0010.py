@@ -1,10 +1,14 @@
 import cv2
 import numpy as np
+import sys
+
+np.set_printoptions(threshold=sys.maxsize)  # dont skip print
+
 # import OpenEXR
 # import Imath
 
 from mijo_fk_cv_np import *
-from mmh_test import string_to_cm_float
+from mmh_test import *
 from write_multi_RGBA_exr import *
 
 import os
@@ -43,27 +47,38 @@ all_mask_sum = merge_sum_images(images)
 img_sum = all_mask_sum
 
 cm0 = np.zeros((height, width, 4), dtype=np.float32)
-cm0_r = np.zeros((height, width, 1), dtype=np.float32)
-cm0_g = np.zeros((height, width, 1), dtype=np.float32)
+cm0_r = np.zeros((height, width), dtype=np.float32)
+cm0_g = np.zeros((height, width), dtype=np.float32)
 
-bool_depth_1 = (img_sum == (1 / 255))
+bool_depth_1 = ((1 - np.abs(img_sum * 255)) < 0.1)
+# bool_depth_1 = (img_sum == (1 / 255))
+# bool_depth_1 = (img_sum > 0.5)
 
 # print(np.sum(bool_depth_1[bool_depth_1 == True]))
+
+manifest_data = {}
 
 for key, value in images.items():
     bool_png_Mask = (value > 0)
     intersection = np.logical_and(bool_png_Mask, bool_depth_1)
-    cm_value = string_to_cm_float(key)
+    # cm_value = string_to_cm_float(key)
+    aaa = hash_object_name(key)
+    cm_value = aaa['fff']
+    # print(cm_value)
     # print(value)
     # 將符合條件的位置上色為紅色 (0, 0, 255)，可以自行更改顏色
     indices = np.where(intersection)
     indices = indices[:2]  # Select only the first two arrays
     cm0_r[indices] = cm_value
     # cm0[:, :, 0][indices] = value
+    manifest_data.update(aaa['fk'])
 
-cm0_g += 1
+# cm0_g += 1
 
-cm0[:, :, 0] = np.squeeze(cm0_r)
+# cm0[:, :, 0] = np.squeeze(cm0_r)
+# print(cm0_r)
+cm0[:, :, 0] = cm0_r
+# print(cm0[:, :, 0])
 # cm0[:, :, 1] = np.squeeze(cm0_g)
 
 # iiii = [img_sum, img_sum, img_sum]
@@ -78,12 +93,7 @@ layer_names = [
 ]  # Unique layer names
 
 # 設定Cryptomatte元數據
-manifest_data = {
-    "objectName1": "hash1",
-    "objectName2": "hash2",
-    # 添加更多物體和對應的hash值
-}
 
-metadata = {"name": "sam", "age": 18}
+metadata = {"name": "sam", "age": 18}  # fuck
 
 save_multi_layer_exr(output_file, iiii, layer_names, metadata, manifest_data)

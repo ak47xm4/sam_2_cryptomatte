@@ -1,7 +1,11 @@
-import cv2
+# import cv2
 import Imath
 import OpenEXR
 import numpy as np
+import sys
+
+np.set_printoptions(threshold=sys.maxsize)  # dont skip print
+
 import json
 
 
@@ -28,6 +32,7 @@ def save_multi_layer_exr(output_path, images, layer_names, metadata,
     header['cryptomatte/3ae39a5/manifest'] = json.dumps(manifest_data).encode(
         'utf-8')
     header['cryptomatte/3ae39a5/name'] = b"ViewLayer.CryptoObject"
+    header['cryptomatte/3ae39a5/hash'] = b"Murmurhash3_32"
 
     # header['metadata'] = metadata
 
@@ -48,11 +53,15 @@ def save_multi_layer_exr(output_path, images, layer_names, metadata,
     # Prepare pixel data
     pixel_data = dict()
     for img, layer_name in zip(images, layer_names):
+        img /= 255
         img_float = img.astype(np.float32)
         for i, channel in enumerate("RGBA"):
-            pixel_data[f"{layer_name}.{channel}"] = img_float[:, :,
-                                                              i].tobytes()
-
+            px_value = img_float[:, :, i].tobytes()
+            pixel_data[f"{layer_name}.{channel}"] = px_value
+            # if channel == "R" and layer_name == "ViewLayer.CryptoObject00":
+            # recovered_arr = np.frombuffer(px_value, dtype=np.float32)
+            # print(recovered_arr)
     # Write pixels
     exr_file.writePixels(pixel_data)
+    # print(dir(exr_file.writePixels))
     exr_file.close()
