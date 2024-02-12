@@ -14,6 +14,7 @@ directory = r'C:\Users\Administrator\Documents\GitHub\sam_2_cryptomatte\test_mas
 
 # Create an empty dictionary
 images = {}
+# images_list = []
 
 # Loop through the files in the directory
 for filename in os.listdir(directory):
@@ -27,7 +28,11 @@ for filename in os.listdir(directory):
         img_2_flt32 = np.float32(img_2_flt32) / 255.0
         images[filename_str] = red_channel_to_alpha(img_2_flt32)
 
+# for i in images:
+# images_list.append(images[i])
+
 height, width, _ = images['0'].shape
+######################################################
 
 random_integers = np.random.randint(0, 5, size=(height, width), dtype=np.uint8)
 
@@ -35,41 +40,50 @@ all_mask_sum = merge_sum_images(images)
 
 # save_as_exr(all_mask_sum, 'merged_image.exr')
 
-img = all_mask_sum
-# print(all_mask_sum)
-# print(img)
-'''
-color_values = [0, 1, 2, 3, 4, 5]
+img_sum = all_mask_sum
 
-for color_value in color_values:
-    # be easier
-    color_values_int = int(color_value)
-    color_value /= 255
+cm0 = np.zeros((height, width, 4), dtype=np.float32)
+cm0_r = np.zeros((height, width, 1), dtype=np.float32)
+cm0_g = np.zeros((height, width, 1), dtype=np.float32)
 
-    # Define the color range
-    lower_bound = np.array([color_value] * 4)
-    # upper_bound = np.array([color_value + 1] * 4)
-    upper_bound = np.array([color_values[-1] / 255] * 4)
+bool_depth_1 = (img_sum == (1 / 255))
 
-    # Find pixels within the color range
-    mask = cv2.inRange(img, lower_bound, upper_bound)
-    # print(mask)
+# print(np.sum(bool_depth_1[bool_depth_1 == True]))
 
-    # Apply the mask to the image
-    result = cv2.bitwise_and(img, img, mask=mask)
+for key, value in images.items():
+    bool_png_Mask = (value > 0)
+    intersection = np.logical_and(bool_png_Mask, bool_depth_1)
+    cm_value = string_to_cm_float(key)
+    # print(value)
+    # 將符合條件的位置上色為紅色 (0, 0, 255)，可以自行更改顏色
+    indices = np.where(intersection)
+    indices = indices[:2]  # Select only the first two arrays
+    cm0_r[indices] = cm_value
+    # cm0[:, :, 0][indices] = value
 
-    # Save the result
-    save_as_exr(result, f'merged_image_{color_values_int}.exr')
-'''
-# 读取输入图像
-# image_paths = ['image1.png', 'image2.png', 'image3.png']  # 你的输入图像路径
-# images = [cv2.imread(image_path) for image_path in image_paths]
+cm0_g += 1
 
-iiii = [img, img]
+cm0[:, :, 0] = np.squeeze(cm0_r)
+# cm0[:, :, 1] = np.squeeze(cm0_g)
 
-# print(iiii[0].shape)
+# iiii = [img_sum, img_sum, img_sum]
 
+fk_RGBA = np.zeros((height, width, 4), dtype=np.float32)
+iiii = [fk_RGBA, cm0, cm0, cm0]
 # 保存为多层EXR文件
 output_file = 'output.exr'
-layer_names = ['Layer1', 'Layer2']  # Unique layer names
-save_multi_layer_exr(output_file, iiii, layer_names)
+layer_names = [
+    'ViewLayer', 'ViewLayer.CryptoObject00', 'ViewLayer.CryptoObject01',
+    'ViewLayer.CryptoObject02'
+]  # Unique layer names
+
+# 設定Cryptomatte元數據
+manifest_data = {
+    "objectName1": "hash1",
+    "objectName2": "hash2",
+    # 添加更多物體和對應的hash值
+}
+
+metadata = {"name": "sam", "age": 18}
+
+save_multi_layer_exr(output_file, iiii, layer_names, metadata, manifest_data)

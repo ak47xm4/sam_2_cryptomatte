@@ -1,4 +1,5 @@
 import mmh3
+import numpy as np
 import zlib
 import struct
 
@@ -26,9 +27,13 @@ def cryptomatte_hash_to_float(cryptomatte_hash):
     return hash_float
 
 
-def string_to_cm_float(string):
-    cryptomatte_hash = string_to_cryptomatte_hash(string)
-    return cryptomatte_hash_to_float(cryptomatte_hash)
+# def string_to_cm_float(string):
+# cryptomatte_hash = string_to_cryptomatte_hash(string)
+# return cryptomatte_hash_to_float(cryptomatte_hash)
+
+
+def string_to_cm_float(name):
+    return np.float32(mmh3.hash(name, 0) & 0xffffffff) / np.float32(2**32)
 
 
 # 测试
