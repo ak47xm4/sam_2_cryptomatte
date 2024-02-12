@@ -4,6 +4,7 @@ import numpy as np
 # import Imath
 
 from mijo_fk_cv_np import *
+from mmh_test import string_to_cm_float
 
 import os
 
@@ -35,11 +36,14 @@ all_mask_sum = merge_sum_images(images)
 
 img = all_mask_sum
 # print(all_mask_sum)
+'''
 color_values = [0, 1, 2, 3, 4, 5]
 
 for color_value in color_values:
+    # be easier
     color_values_int = int(color_value)
     color_value /= 255
+
     # Define the color range
     lower_bound = np.array([color_value] * 4)
     # upper_bound = np.array([color_value + 1] * 4)
@@ -54,3 +58,4 @@ for color_value in color_values:
 
     # Save the result
     save_as_exr(result, f'merged_image_{color_values_int}.exr')
+'''

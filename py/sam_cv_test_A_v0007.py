@@ -31,4 +31,7 @@ height, width, _ = images['0'].shape
 
 aaa = merge_sum_images(images)
 
-save_as_exr(aaa, 'merged_image.exr')
+# save_as_exr(aaa, 'merged_image.exr')
+
+mmm = (aaa == 1 / 255)
+print(mmm)
