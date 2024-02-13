@@ -9,6 +9,15 @@ from mmh_test import *
 from write_multi_RGBA_exr import *
 
 import os
+import random
+
+
+def find_key_by_value(dictionary, value):
+    for key, val in dictionary.items():
+        if val == value:
+            return key
+    return None  # 如果找不到对应值，则返回None或者适当的默认值
+
 
 # Define the directory where the PNG files are located
 directory = r'C:\Users\Administrator\Documents\GitHub\sam_2_cryptomatte\test_mask_png'
@@ -33,9 +42,11 @@ height, width, _ = images['0'].shape
 
 random_integers = np.random.randint(0, 6, size=(height, width), dtype=np.uint8)
 
+# print(random_integers)
+
 all_mask_sum = merge_sum_images(images)
 
-img_sum = all_mask_sum
+img_sum = all_mask_sum[:, :, 0]
 
 # test not offical
 cm0 = np.zeros((height, width, 4), dtype=np.float32)
@@ -74,34 +85,65 @@ bool_depth_list = [
 
 manifest_data = {}
 
-for i in range(0, len(bool_depth_list)):
+# 生成所有可能的数字对
+pairs = []
+iiii = list(range(6))
+jjjj = list(range(6))
+random.shuffle(iiii)
+random.shuffle(jjjj)
+
+for i in iiii:
+    for j in jjjj:
+        pairs.append((i, j))
+
+# 用一个整数来表示每种组合
+states = {}
+for idx, pair in enumerate(pairs):
+    state = idx
+    states[state] = pair
+
+# print(states)
+
+for i in range(0, 6):
     bool_depth = bool_depth_list[i]
-    for key, value in images.items():
-        # the mask from overlapping
-        bool_png_Mask = (value > 0)
-        # let bool value been useful
-        float_png_Mask = bool_png_Mask.astype(np.float32)
-        intersection_base_1 = np.logical_and(bool_png_Mask, bool_depth)
-        hash_obj_dict = hash_object_name(key)
-        for o in range(0, 6):
-            pass
-            # rand area
-            loop_num = (i + o) % 6
-            # print(loop_num)
-            bool_rand = (random_integers == loop_num)
+
+    for o in range(0, 6):
+        # print(i, o)
+        pass
+        # intersection = np.zeros((height, width), dtype=bool)
+
+        # rand area
+        # loop_num = (i + o) % 6
+        loop_num = find_key_by_value(states, (i, o))
+        # print(loop_num)
+        loop_num = (loop_num + 1) % 6
+        # print(loop_num)
+        bool_rand = (random_integers == loop_num)
+
+        for key, value in images.items():
+            intersection = np.ones((height, width), dtype=bool)
+            # print(key)
+            # the mask from overlapping
+            bool_png_Mask = np.zeros((height, width), dtype=bool)
+            bool_png_Mask = (value[:, :, 0] > 0)
+
+            float_png_Mask = bool_png_Mask.astype(np.float32)
+            intersection = np.logical_and(bool_png_Mask, bool_depth)
+
             # process intersection
-            intersection = np.logical_and(intersection_base_1[:, :, 0],
-                                          bool_rand)
+            intersection = np.logical_and(intersection, bool_rand)
+            hash_obj_dict = hash_object_name(key)
+
             cm_value = hash_obj_dict['fff']
-            # print(cm_value)
-            # print(value)
+
             indices = np.where(intersection)
             indices = indices[:2]  # Select only the first two arrays
-            cm_channel_id_list[o][indices] = cm_value
-            cm_channel_mask_list[o][indices] = 255
+            cm_channel_id_list[loop_num][indices] = cm_value
+            cm_channel_mask_list[loop_num][indices] = 255
 
-        if (i == 0):
-            manifest_data.update(hash_obj_dict['fk'])
+    # manifest_data
+    if (i == 0):
+        manifest_data.update(hash_obj_dict['fk'])
 
 cm0[:, :, 0] = cm_channel_id_list[0]
 cm0[:, :, 1] = cm_channel_mask_list[0]

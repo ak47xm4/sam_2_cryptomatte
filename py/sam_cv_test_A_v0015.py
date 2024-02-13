@@ -72,36 +72,53 @@ bool_depth_list = [
     bool_depth_6
 ]
 
-manifest_data = {}
+# manual rand grpuping
 
-for i in range(0, len(bool_depth_list)):
+# rand_depth_2_0 = (random_integers < 3)
+# rand_depth_2_1 = (random_integers >= 3)
+
+# rand_depth_3_0 = (random_integers < 2)
+# rand_depth_3_1 = (random_integers >= 2 and random_integers < 5)
+# rand_depth_3_2 = (random_integers >= 2 and random_integers < 5)
+
+# rand_depth_4_0 = (random_integers < 3)
+# rand_depth_4_1 = (random_integers >= 3)
+
+# rand_depth_5_0 = (random_integers < 3)
+# rand_depth_5_1 = (random_integers >= 3)
+
+# rand_depth_6_0 = (random_integers < 3)
+# rand_depth_6_1 = (random_integers >= 3)
+
+manifest_data = {}
+for i in range(0, 6):
     bool_depth = bool_depth_list[i]
     for key, value in images.items():
         # the mask from overlapping
         bool_png_Mask = (value > 0)
-        # let bool value been useful
-        float_png_Mask = bool_png_Mask.astype(np.float32)
-        intersection_base_1 = np.logical_and(bool_png_Mask, bool_depth)
-        hash_obj_dict = hash_object_name(key)
+
+        # idk
+
         for o in range(0, 6):
-            pass
-            # rand area
+            # let bool value been useful
             loop_num = (i + o) % 6
-            # print(loop_num)
             bool_rand = (random_integers == loop_num)
-            # process intersection
-            intersection = np.logical_and(intersection_base_1[:, :, 0],
-                                          bool_rand)
-            cm_value = hash_obj_dict['fff']
-            # print(cm_value)
-            # print(value)
+            float_png_Mask = bool_png_Mask.astype(np.float32)
+            intersection = np.logical_and(bool_png_Mask, bool_depth)
+            intersection = np.logical_and(intersection[:, :, 0], bool_rand)
+            # intersection = np.logical_and(bool_png_Mask[:, :, 0], bool_rand)
+            hash_obj_dict = hash_object_name(key)
+
             indices = np.where(intersection)
             indices = indices[:2]  # Select only the first two arrays
-            cm_channel_id_list[o][indices] = cm_value
-            cm_channel_mask_list[o][indices] = 255
+            cm_value = hash_obj_dict['fff']
 
-        if (i == 0):
-            manifest_data.update(hash_obj_dict['fk'])
+            cm_channel_id_list[i][indices] = cm_value
+            cm_channel_mask_list[i][indices] = 255
+
+    # manifest_data
+    if (i == 0):
+        manifest_data.update(hash_obj_dict['fk'])
 
 cm0[:, :, 0] = cm_channel_id_list[0]
 cm0[:, :, 1] = cm_channel_mask_list[0]
