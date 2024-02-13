@@ -38,7 +38,7 @@ for filename in os.listdir(directory):
 height, width, _ = images['0'].shape
 ######################################################
 
-random_integers = np.random.randint(0, 5, size=(height, width), dtype=np.uint8)
+random_integers = np.random.randint(0, 6, size=(height, width), dtype=np.uint8)
 
 all_mask_sum = merge_sum_images(images)
 
@@ -65,6 +65,10 @@ cm2_g = np.zeros((height, width), dtype=np.float32)
 cm2_b = np.zeros((height, width), dtype=np.float32)
 cm2_a = np.zeros((height, width), dtype=np.float32)
 
+cm_channel_id_list = [cm0_r, cm0_b, cm1_r, cm1_b, cm2_r, cm2_b]
+
+cm_channel_mask_list = [cm0_g, cm0_a, cm1_g, cm1_a, cm2_g, cm2_a]
+
 bool_depth_1 = ((np.abs(1 - (img_sum * 255))) < 0.1)
 bool_depth_2 = ((np.abs(2 - (img_sum * 255))) < 0.1)
 bool_depth_3 = ((np.abs(3 - (img_sum * 255))) < 0.1)
@@ -72,82 +76,53 @@ bool_depth_4 = ((np.abs(4 - (img_sum * 255))) < 0.1)
 bool_depth_5 = ((np.abs(5 - (img_sum * 255))) < 0.1)
 bool_depth_6 = ((np.abs(6 - (img_sum * 255))) < 0.1)
 
+bool_depth_list = [
+    bool_depth_1, bool_depth_2, bool_depth_3, bool_depth_4, bool_depth_5,
+    bool_depth_6
+]
+
 manifest_data = {}
-# cm 0
-for key, value in images.items():
-    # the mask from overlapping
-    bool_png_Mask = (value > 0)
-    # let bool value been useful
-    float_png_Mask = bool_png_Mask.astype(np.float32)
-    intersection = np.logical_and(bool_png_Mask, bool_depth_1)
-    # cm_value = string_to_cm_float(key)
-    aaa = hash_object_name(key)
-    cm_value = aaa['fff']
-    # print(cm_value)
-    # print(value)
-    # 將符合條件的位置上色為紅色 (0, 0, 255)，可以自行更改顏色
-    indices = np.where(intersection)
-    indices = indices[:2]  # Select only the first two arrays
-    cm0_r[indices] = cm_value
-    cm0_g[indices] = 255
-    manifest_data.update(aaa['fk'])
-# cm0[:, :, 0] = cm0_r
-# cm0[:, :, 1] = cm0_g
-# cm 0
 
-# cm 0_1
-for key, value in images.items():
-    # the mask from overlapping
-    bool_png_Mask = (value > 0)
-    # rand area
-    # print(bool_rand)
-    bool_rand = (random_integers < 3)
-    float_png_Mask = bool_png_Mask.astype(np.float32)
-    intersection = np.logical_and(bool_png_Mask, bool_depth_2)
-    intersection = np.logical_and(intersection[:, :, 0], bool_rand)
-    # cm_value = string_to_cm_float(key)
-    aaa = hash_object_name(key)
+for i in range(0, len(bool_depth_list)):
+    bool_depth = bool_depth_list[i]
+    for key, value in images.items():
+        # the mask from overlapping
+        bool_png_Mask = (value > 0)
+        # let bool value been useful
+        float_png_Mask = bool_png_Mask.astype(np.float32)
+        intersection_base_1 = np.logical_and(bool_png_Mask, bool_depth)
+        hash_obj_dict = hash_object_name(key)
+        for o in range(0, 6):
+            pass
+            # rand area
+            loop_num = (i + o) % 6
+            # print(loop_num)
+            bool_rand = (random_integers == loop_num)
+            # process intersection
+            intersection = np.logical_and(intersection_base_1[:, :, 0],
+                                          bool_rand)
+            cm_value = hash_obj_dict['fff']
+            # print(cm_value)
+            # print(value)
+            indices = np.where(intersection)
+            indices = indices[:2]  # Select only the first two arrays
+            cm_channel_id_list[o][indices] = cm_value
+            cm_channel_mask_list[o][indices] = 255
 
-    sss = np.sum(intersection)
-    # print(sss)
+cm0[:, :, 0] = cm_channel_id_list[0]
+cm0[:, :, 1] = cm_channel_mask_list[0]
+cm0[:, :, 2] = cm_channel_id_list[1]
+cm0[:, :, 3] = cm_channel_mask_list[1]
 
-    cm_value = aaa['fff']
+cm1[:, :, 0] = cm_channel_id_list[2]
+cm1[:, :, 1] = cm_channel_mask_list[2]
+cm1[:, :, 2] = cm_channel_id_list[3]
+cm1[:, :, 3] = cm_channel_mask_list[3]
 
-    # 將符合條件的位置上色為紅色 (0, 0, 255)，可以自行更改顏色
-    indices = np.where(intersection)
-    indices = indices[:2]  # Select only the first two arrays
-    cm0_r[indices] = cm_value
-    cm0_g[indices] = 255
-cm0[:, :, 0] = cm0_r
-cm0[:, :, 1] = cm0_g
-# cm 0_1
-
-# cm 0_2
-for key, value in images.items():
-    # the mask from overlapping
-    bool_png_Mask = (value > 0)
-    # rand area
-    bool_rand = (random_integers >= 3)
-    cm_value = aaa['fff']
-    # print(bool_rand)
-    # float_png_Mask = bool_png_Mask.astype(np.float32)
-    intersection = np.logical_and(bool_png_Mask, bool_depth_2)
-
-    intersection = np.logical_and(intersection[:, :, 0], bool_rand)
-    # cm_value = string_to_cm_float(key)
-    aaa = hash_object_name(key)
-
-    # 將符合條件的位置上色為紅色 (0, 0, 255)，可以自行更改顏色
-    indices = np.where(intersection)
-    indices = indices[:2]  # Select only the first two arrays
-    cm0_b[indices] = cm_value
-    cm0_a[indices] = 255
-# cm 0_2
-# cm0[:, :, 2] = cm0_b
-# cm0[:, :, 3] = cm0_a
-
-# cm1[:, :, 0] = cm1_r
-# cm1[:, :, 1] = cm1_g
+cm2[:, :, 0] = cm_channel_id_list[4]
+cm2[:, :, 1] = cm_channel_mask_list[4]
+cm2[:, :, 2] = cm_channel_id_list[5]
+cm2[:, :, 3] = cm_channel_mask_list[5]
 
 # fk_RGBA = np.zeros((height, width, 4), dtype=np.float32)
 iiii = [cm0, cm1, cm2]
