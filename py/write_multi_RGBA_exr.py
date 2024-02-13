@@ -30,7 +30,7 @@ def save_multi_layer_exr(output_path, images, layer_names, metadata,
     # header['channels'] = dict([(c, float_chan) for c in "RGBA"])
 
     # layer_hash_str = layer_hash('ViewLayer.CryptoObject')
-    layer_hash_str = layer_hash('CryptoObject')
+    layer_hash_str = layer_hash('ViewLayer.CryptoObject')
 
     print(f"fuuuuuuuuk:{layer_hash_str}")
 
