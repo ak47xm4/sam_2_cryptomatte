@@ -5,51 +5,7 @@ import sys
 
 np.set_printoptions(threshold=sys.maxsize)  # dont skip print
 
-import zlib
 import struct
-
-
-def string_to_cryptomatte_hash(string):
-    # 使用MurmurHash算法计算字符串的哈希值
-    hash_value = mmh3.hash64(string, seed=0)[0]
-
-    # 将哈希值压缩为4字节并添加CRC32校验
-    packed_data = struct.pack('>Q', hash_value)
-    crc32 = zlib.crc32(packed_data)
-    packed_data += struct.pack('>I', crc32 & 0xFFFFFFFF)
-
-    # 返回Cryptomatte哈希值的字符串表示
-    return packed_data.hex()
-
-
-def cryptomatte_hash_to_float(cryptomatte_hash):
-    # 将十六进制字符串转换为整数
-    hash_int = int(cryptomatte_hash, 16)
-
-    # 将整数转换为 float
-    hash_float = float(hash_int)
-
-    return hash_float
-
-
-# def string_to_cm_float(string):
-# cryptomatte_hash = string_to_cryptomatte_hash(string)
-# return cryptomatte_hash_to_float(cryptomatte_hash)
-
-
-def string_to_cm_float(name):
-    return np.float32(mmh3.hash(name, 0) & 0xffffffff) / np.float32(2**32)
-
-
-'''
-def mm3hash_float(name):
-    hash_32 = mmh3.hash(name)
-    exp = hash_32 >> 23 & 255
-    if (exp == 0) or (exp == 255):
-        hash_32 ^= 1 << 23
-    packed = struct.pack('<L', hash_32 & 0xffffffff)
-    return struct.unpack('<f', packed)[0]
-'''
 
 
 def mm3hash_float(name):
@@ -78,6 +34,7 @@ def hash_object_name(object_name):
     # float_value = struct.unpack('f', struct.pack('I',
     #  hash_value & 0xffffffff))[0]
     float_value = mm3hash_float(object_name)
+    # float_value = float_value.astype(np.float32)
 
     # hash_hex = struct.unpack('=f', object_name.decode('hex'))[0]
     # hash_hex = mm3_float_2_hex8(float_value)

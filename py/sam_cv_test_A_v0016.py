@@ -31,7 +31,7 @@ for filename in os.listdir(directory):
 height, width, _ = images['0'].shape
 ######################################################
 
-# random_integers = np.random.randint(0, 6, size=(height, width), dtype=np.uint8)
+random_integers = np.random.randint(0, 6, size=(height, width), dtype=np.uint8)
 
 all_mask_sum = merge_sum_images(images)
 
@@ -74,6 +74,7 @@ bool_depth_list = [
 
 manifest_data = {}
 
+# 生成Cryptomatte數據
 for i in range(0, 6):
     bool_depth = bool_depth_list[i]
     for key, value in images.items():
@@ -87,12 +88,74 @@ for i in range(0, 6):
         indices = indices[:2]  # Select only the first two arrays
         cm_value = hash_obj_dict['fff']
 
-        cm_channel_id_list[i][indices] = cm_value * 255
-        cm_channel_mask_list[i][indices] = 255
+        cm_channel_id_list[i][indices] = cm_value
+        cm_channel_mask_list[i][indices] = 1
 
-    # manifest_data
-    if (i == 0):
-        manifest_data.update(hash_obj_dict['fk'])
+        # manifest_data
+        if (i == 0):
+            manifest_data.update(hash_obj_dict['fk'])
+
+    # sort by cm layer intersection
+
+for i in range(2, 6):
+    pass
+    # xor pass layer 0
+    xor = np.logical_xor(cm_channel_mask_list[0], cm_channel_mask_list[i])
+    intersection_xor = np.logical_and(cm_channel_mask_list[0], xor)
+    indices = np.logical_not(intersection_xor)
+    temp_array_1 = cm_channel_id_list[0]
+
+    np.copyto(cm_channel_id_list[0],
+              cm_channel_id_list[i],
+              casting='same_kind',
+              where=indices)
+    temp_array_1 = cm_channel_id_list[0]
+
+    np.copyto(cm_channel_mask_list[0],
+              cm_channel_mask_list[i],
+              casting='same_kind',
+              where=indices)
+    pass
+    # xor pass layer 1
+    xor = np.logical_xor(cm_channel_mask_list[1], cm_channel_mask_list[i])
+    intersection_xor = np.logical_and(cm_channel_mask_list[1], xor)
+    indices = np.logical_not(intersection_xor)
+    # if(np.array_equal(intersection,bool_depth_list[i])):
+    temp_array_1 = cm_channel_id_list[0]
+
+    np.copyto(cm_channel_id_list[1],
+              cm_channel_id_list[i],
+              casting='same_kind',
+              where=indices)
+    temp_array_1 = cm_channel_id_list[1]
+
+    np.copyto(cm_channel_mask_list[1],
+              cm_channel_mask_list[i],
+              casting='same_kind',
+              where=indices)
+    pass
+    # rand overlapping pass layer 0
+    rand_area_1 = (random_integers == i)
+    overlapping = np.logical_and(cm_channel_mask_list[0],
+                                 cm_channel_mask_list[i])
+
+    indices = np.logical_and(rand_area_1, overlapping)
+    # if(np.array_equal(intersection,bool_depth_list[i])):
+    temp_array_1 = cm_channel_id_list[0]
+
+    np.copyto(cm_channel_id_list[0],
+              cm_channel_id_list[i],
+              casting='same_kind',
+              where=indices)
+    temp_array_1 = cm_channel_id_list[0]
+
+    np.copyto(cm_channel_mask_list[0],
+              cm_channel_mask_list[i],
+              casting='same_kind',
+              where=indices)
+    pass
+    pass
+    pass
 
 cm0[:, :, 0] = cm_channel_id_list[0]
 cm0[:, :, 1] = cm_channel_mask_list[0]
@@ -109,7 +172,6 @@ cm2[:, :, 1] = cm_channel_mask_list[4]
 cm2[:, :, 2] = cm_channel_id_list[5]
 cm2[:, :, 3] = cm_channel_mask_list[5]
 
-# fk_RGBA = np.zeros((height, width, 4), dtype=np.float32)
 iiii = [cm0, cm1, cm2]
 # 保存为多层EXR文件
 output_file = 'output.exr'

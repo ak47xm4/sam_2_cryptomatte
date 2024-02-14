@@ -60,14 +60,10 @@ def save_multi_layer_exr(output_path, images, layer_names, manifest_data):
     # Prepare pixel data
     pixel_data = dict()
     for img, layer_name in zip(images, layer_names):
-        img /= 255
         img_float = img.astype(np.float32)
         for i, channel in enumerate("RGBA"):
             px_value = img_float[:, :, i].tobytes()
             pixel_data[f"{layer_name}.{channel}"] = px_value
-            # if channel == "R" and layer_name == "ViewLayer.CryptoObject00":
-            # recovered_arr = np.frombuffer(px_value, dtype=np.float32)
-            # print(recovered_arr)
     # Write pixels
     exr_file.writePixels(pixel_data)
     # print(dir(exr_file.writePixels))
