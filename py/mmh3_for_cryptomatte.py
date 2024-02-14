@@ -1,4 +1,4 @@
-import binascii
+# import binascii
 import mmh3
 import numpy as np
 import sys

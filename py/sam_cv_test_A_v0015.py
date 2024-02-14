@@ -5,7 +5,7 @@ import sys
 np.set_printoptions(threshold=sys.maxsize)  # dont skip print
 
 from mijo_fk_cv_np import *
-from mmh_test import *
+from mmh3_for_cryptomatte import *
 from write_multi_RGBA_exr import *
 
 import os
@@ -72,32 +72,13 @@ bool_depth_list = [
     bool_depth_6
 ]
 
-# manual rand grpuping
-
-# rand_depth_2_0 = (random_integers < 3)
-# rand_depth_2_1 = (random_integers >= 3)
-
-# rand_depth_3_0 = (random_integers < 2)
-# rand_depth_3_1 = (random_integers >= 2 and random_integers < 5)
-# rand_depth_3_2 = (random_integers >= 2 and random_integers < 5)
-
-# rand_depth_4_0 = (random_integers < 3)
-# rand_depth_4_1 = (random_integers >= 3)
-
-# rand_depth_5_0 = (random_integers < 3)
-# rand_depth_5_1 = (random_integers >= 3)
-
-# rand_depth_6_0 = (random_integers < 3)
-# rand_depth_6_1 = (random_integers >= 3)
-
 manifest_data = {}
+
 for i in range(0, 6):
     bool_depth = bool_depth_list[i]
     for key, value in images.items():
         # the mask from overlapping
         bool_png_Mask = (value > 0)
-
-        # idk
 
         for o in range(0, 6):
             # let bool value been useful
@@ -145,7 +126,4 @@ layer_names = [
 ]  # Unique layer names
 
 # 設定Cryptomatte元數據
-
-metadata = {"name": "sam", "age": 18}  # fuck
-
-save_multi_layer_exr(output_file, iiii, layer_names, metadata, manifest_data)
+save_multi_layer_exr(output_file, iiii, layer_names, manifest_data)

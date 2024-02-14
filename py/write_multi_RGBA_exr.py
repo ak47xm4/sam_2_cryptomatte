@@ -7,11 +7,10 @@ import sys
 np.set_printoptions(threshold=sys.maxsize)  # dont skip print
 
 import json
-from mmh_test import *
+from mmh3_for_cryptomatte import *
 
 
-def save_multi_layer_exr(output_path, images, layer_names, metadata,
-                         manifest_data):
+def save_multi_layer_exr(output_path, images, layer_names, manifest_data):
     """
     Write multiple RGBA images to a single EXR file with multiple layers.
     images: List of NumPy arrays of image data
