@@ -16,10 +16,14 @@ def save_as_exr(image, filename):
 
     exr = OpenEXR.OutputFile(filename, header)
     exr.writePixels({
-        'R': image[:, :, 0].tobytes(),
-        'G': image[:, :, 1].tobytes(),
-        'B': image[:, :, 2].tobytes(),
-        'A': image[:, :, 3].tobytes()
+        'R': image[:, :, 0],
+        'G': image[:, :, 1],
+        'B': image[:, :, 2],
+        'A': image[:, :, 3]
+        # 'R': image[:, :, 0].tobytes(),
+        # 'G': image[:, :, 1].tobytes(),
+        # 'B': image[:, :, 2].tobytes(),
+        # 'A': image[:, :, 3].tobytes()
     })
     exr.close()
 
