@@ -118,7 +118,6 @@ for i in range(2, 6):
     xor = np.logical_xor(cm_channel_mask_list[1], cm_channel_mask_list[i])
     intersection_xor = np.logical_and(cm_channel_mask_list[1], xor)
     indices = np.logical_not(intersection_xor)
-    # if(np.array_equal(intersection,bool_depth_list[i])):
 
     np.copyto(cm_channel_id_list[1],
               cm_channel_id_list[i],
@@ -137,9 +136,10 @@ for i in range(2, 6):
 
     rand_area_1 = (random_integers == i)
 
-    indices = rand_area_1
-
     # rand overlapping pass layer 0
+    interesct = np.logical_and(cm_channel_mask_list[0],
+                               cm_channel_mask_list[i])
+    indices = np.logical_and(rand_area_1, interesct)
     temp_array_1 = cm_channel_id_list[0].copy()
 
     np.copyto(cm_channel_id_list[0],
@@ -164,6 +164,9 @@ for i in range(2, 6):
 
     pass
     # rand overlapping pass layer 1
+    interesct = np.logical_and(cm_channel_mask_list[1],
+                               cm_channel_mask_list[i])
+    indices = np.logical_and(rand_area_1, interesct)
     temp_array_1 = cm_channel_id_list[1].copy()
 
     np.copyto(cm_channel_id_list[1],
