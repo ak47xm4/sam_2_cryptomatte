@@ -31,7 +31,7 @@ def save_multi_layer_exr(output_path, images, layer_names, manifest_data):
     # layer_hash_str = layer_hash('ViewLayer.CryptoObject')
     layer_hash_str = layer_hash('ViewLayer.CryptoObject')
 
-    print(f"fuuuuuuuuk:{layer_hash_str}")
+    # print(f"fuuuuuuuuk:{layer_hash_str}")
 
     header['cryptomatte/' + layer_hash_str +
            '/conversion'] = b"uint32_to_float32"

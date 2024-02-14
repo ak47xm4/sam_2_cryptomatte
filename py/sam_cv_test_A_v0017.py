@@ -163,6 +163,7 @@ for i in range(2, 6):
               where=indices)
 
     pass
+    '''
     # rand overlapping pass layer 1
     interesct = np.logical_and(cm_channel_mask_list[1],
                                cm_channel_mask_list[i])
@@ -190,7 +191,7 @@ for i in range(2, 6):
               where=indices)
     pass
     pass
-
+    '''
 cm0[:, :, 0] = cm_channel_id_list[0]
 cm0[:, :, 1] = cm_channel_mask_list[0]
 cm0[:, :, 2] = cm_channel_id_list[1]
