@@ -31,7 +31,7 @@ for filename in os.listdir(directory):
 height, width, _ = images['0'].shape
 ######################################################
 
-random_integers = np.random.randint(0, 6, size=(height, width), dtype=np.uint8)
+# random_integers = np.random.randint(0, 6, size=(height, width), dtype=np.uint8)
 
 all_mask_sum = merge_sum_images(images)
 
@@ -79,23 +79,16 @@ for i in range(0, 6):
     for key, value in images.items():
         # the mask from overlapping
         bool_png_Mask = (value > 0)
+        float_png_Mask = bool_png_Mask.astype(np.float32)
+        intersection = np.logical_and(bool_png_Mask, bool_depth)
+        hash_obj_dict = hash_object_name(key)
 
-        for o in range(0, 6):
-            # let bool value been useful
-            loop_num = (i + o) % 6
-            bool_rand = (random_integers == loop_num)
-            float_png_Mask = bool_png_Mask.astype(np.float32)
-            intersection = np.logical_and(bool_png_Mask, bool_depth)
-            intersection = np.logical_and(intersection[:, :, 0], bool_rand)
-            # intersection = np.logical_and(bool_png_Mask[:, :, 0], bool_rand)
-            hash_obj_dict = hash_object_name(key)
+        indices = np.where(intersection)
+        indices = indices[:2]  # Select only the first two arrays
+        cm_value = hash_obj_dict['fff']
 
-            indices = np.where(intersection)
-            indices = indices[:2]  # Select only the first two arrays
-            cm_value = hash_obj_dict['fff']
-
-            cm_channel_id_list[i][indices] = cm_value
-            cm_channel_mask_list[i][indices] = 255
+        cm_channel_id_list[i][indices] = cm_value
+        cm_channel_mask_list[i][indices] = 255
 
     # manifest_data
     if (i == 0):
