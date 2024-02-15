@@ -101,7 +101,7 @@ for key, value in images.items():
 
 print(" 生成Cryptomatte數據 --- %s seconds ---" % (time.time() - start_time))
 
-for i in range(2, 6):
+for i in range(1, 6):
     pass
     rand_area_1 = (random_integers == i)
 
