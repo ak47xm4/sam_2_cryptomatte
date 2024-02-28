@@ -61,13 +61,6 @@ def merge_add_images(image1, image2):
     image1 = np.float32(image1) / 255.0
     image2 = np.float32(image2) / 255.0
 
-    # 計算合併後的顏色和透明度
-    # for color in range(0, 4):
-    # image1[:, :, color] = image1[:, :, color] + image2[:, :, color]
-
-    # OK, this is the correct way to add the images
-    # image1 = image1 + image2
-
     # This is the correct way to add the images
     np.sum([image1, image2], axis=0, out=image1)
 

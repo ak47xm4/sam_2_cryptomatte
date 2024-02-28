@@ -24,11 +24,6 @@ def save_multi_layer_exr(output_path, images, layer_names, manifest_data):
     header = OpenEXR.Header(width, height)
     float_chan = Imath.Channel(Imath.PixelType(Imath.PixelType.FLOAT))
     header['channels'] = dict()
-    # header['cryptomatte'] = b'aaa'  # Enable Cryptomatte support
-    # header['fuck'] = {"fuck": "qwerty"}
-    # header['channels'] = dict([(c, float_chan) for c in "RGBA"])
-
-    # layer_hash_str = layer_hash('ViewLayer.CryptoObject')
     layer_hash_str = layer_hash('ViewLayer.CryptoObject')
 
     # print(f"fuuuuuuuuk:{layer_hash_str}")
@@ -41,8 +36,6 @@ def save_multi_layer_exr(output_path, images, layer_names, manifest_data):
            '/name'] = b"ViewLayer.CryptoObject"
     header['cryptomatte/' + layer_hash_str + '/hash'] = b"Murmurhash3_32"
 
-    # header['metadata'] = metadata
-
     for img, layer_name in zip(images, layer_names):
         # Convert image to half float
         img_float = img.astype(np.float32)
@@ -54,9 +47,6 @@ def save_multi_layer_exr(output_path, images, layer_names, manifest_data):
     # Create the EXR file
     exr_file = OpenEXR.OutputFile(output_path, header)
 
-    # 将元数据写入图像
-    # exr_file.add_header(metadata)
-
     # Prepare pixel data
     pixel_data = dict()
     for img, layer_name in zip(images, layer_names):
@@ -66,5 +56,4 @@ def save_multi_layer_exr(output_path, images, layer_names, manifest_data):
             pixel_data[f"{layer_name}.{channel}"] = px_value
     # Write pixels
     exr_file.writePixels(pixel_data)
-    # print(dir(exr_file.writePixels))
     exr_file.close()
