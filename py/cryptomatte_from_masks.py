@@ -51,7 +51,13 @@ def id_float32(name):
     return np.float32(hash_object_name(name)["fff"])
 
 
-def pack_ranks(items, height, width, ranks, shuffle=False, seed=0):
+def pack_ranks(items,
+               height,
+               width,
+               ranks,
+               shuffle=False,
+               seed=0,
+               shuffle_block=4):
     """Place ``(name, coverage)`` mattes into rank buffers.
 
     ``items`` must already be sorted so the matte that should win rank 0
@@ -86,7 +92,7 @@ def pack_ranks(items, height, width, ranks, shuffle=False, seed=0):
             dropped += int(np.count_nonzero(remaining > 0))
 
     if shuffle:
-        _shuffle_tied_ranks(id_ch, cov_ch, seed)
+        _shuffle_tied_ranks(id_ch, cov_ch, seed, block=shuffle_block)
     return id_ch, cov_ch, dropped
 
 
@@ -297,21 +303,31 @@ def push_secondary_ids_back(id_ch, cov_ch, seed, start_rank=2):
     cov_ch[start_rank:start_rank + count] = sorted_cov[:count]
 
 
-def _shuffle_tied_ranks(id_ch, cov_ch, seed):
-    """Randomize rank order where coverages tie.
+def _shuffle_tied_ranks(id_ch, cov_ch, seed, block=4):
+    """Randomize tied ranks in ``block`` x ``block`` tiles.
 
-    Hard masks all store coverage 1, so the first object would always sit in
-    rank 0 and a VFX picker would only hit that one. Empty ranks stay empty,
-    and a pixel with a single object stays on rank 0.
+    Layer 0 (ranks 0–1) and layer 2 onward (ranks 4+) receive the IDs.
+    Layer 1 (ranks 2–3, CryptoObject01) stays empty so it does not compete
+    with the pick on layer 0. A pixel with a single object stays on rank 0.
     """
-    ranks = id_ch.shape[0]
+    ranks, height, width = id_ch.shape
+    block = max(int(block), 1)
     rng = np.random.default_rng(seed)
-    occupied = cov_ch > 0
-    keys = rng.random((ranks, ) + id_ch.shape[1:], dtype=np.float32)
-    keys = np.where(occupied, keys, np.float32(np.inf))
+    tiles_y = (height + block - 1) // block
+    tiles_x = (width + block - 1) // block
+    keys = rng.random((ranks, tiles_y, tiles_x), dtype=np.float32)
+    keys = np.repeat(np.repeat(keys, block, axis=1), block, axis=2)
+    keys = keys[:, :height, :width]
+    keys = np.where(cov_ch > 0, keys, np.float32(np.inf))
     order = np.argsort(keys, axis=0)
-    id_ch[:] = np.take_along_axis(id_ch, order, axis=0)
-    cov_ch[:] = np.take_along_axis(cov_ch, order, axis=0)
+    sorted_id = np.take_along_axis(id_ch, order, axis=0)
+    sorted_cov = np.take_along_axis(cov_ch, order, axis=0)
+    destinations = [rank for rank in range(ranks) if rank // 2 != 1]
+    id_ch[:] = 0
+    cov_ch[:] = 0
+    for slot, rank in enumerate(destinations):
+        id_ch[rank] = sorted_id[slot]
+        cov_ch[rank] = sorted_cov[slot]
 
 
 def _preview_bgr(name):
